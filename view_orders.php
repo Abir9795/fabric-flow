@@ -1,0 +1,7 @@
+<?php
+require_once __DIR__ . '/includes/layout.php';require_auth();
+$id=filter_input(INPUT_GET,'customer_id',FILTER_VALIDATE_INT);if(!$id){flash('error','Invalid customer.');redirect('manage_customers.php');}
+$s=db()->prepare('SELECT name,email FROM customers WHERE customer_id=?');$s->bind_param('i',$id);$s->execute();$customer=$s->get_result()->fetch_assoc();if(!$customer){flash('error','Customer not found.');redirect('manage_customers.php');}
+$s=db()->prepare('SELECT order_id,order_date,status,total_amount FROM orders WHERE customer_id=? ORDER BY order_date DESC');$s->bind_param('i',$id);$s->execute();$orders=$s->get_result();
+page_start('Customer orders','customers');?>
+<div class="page-heading"><div><h1><?= e($customer['name']) ?></h1><p><?= e($customer['email']) ?> · Order history</p></div><a class="btn btn-secondary" href="manage_customers.php">Back</a></div><section class="card"><?php if($orders->num_rows): ?><div class="table-wrap"><table><thead><tr><th>Order</th><th>Date</th><th>Status</th><th>Total</th><th></th></tr></thead><tbody><?php while($o=$orders->fetch_assoc()): ?><tr><td>#<?= (int)$o['order_id'] ?></td><td><?= e($o['order_date']) ?></td><td><span class="badge"><?= e($o['status']) ?></span></td><td>$<?= number_format((float)$o['total_amount'],2) ?></td><td><a class="btn btn-small" href="invoice.php?order_id=<?= (int)$o['order_id'] ?>">Invoice</a></td></tr><?php endwhile; ?></tbody></table></div><?php else: ?><div class="empty">No orders for this customer.</div><?php endif; ?></section><?php page_end();?>

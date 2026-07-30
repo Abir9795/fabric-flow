@@ -1,0 +1,26 @@
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Database exports and local backups
+*-backup.sql
+*.dump
+*.sqlite
+*.sqlite3
+
+# Runtime files and logs
+*.log
+*.pid
+sessions/
+tmp/
+
+# Editor and operating-system files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~
+
+# Dependency directories (if introduced later)
+/vendor/
